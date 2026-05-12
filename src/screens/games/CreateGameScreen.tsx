@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import {
-    Alert,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    TextInput,
-    View,
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
 
 import { supabase } from '../../lib/supabase';
@@ -46,13 +46,11 @@ export default function CreateGameScreen({ route, navigation }: any) {
         data: { session },
         } = await supabase.auth.getSession();
 
-        console.log('Session:', session);
 
         const user = session?.user;
 
         if (!user) {
         setLoading(false);
-        Alert.alert('Error', 'You must be logged in.');
         return;
         }
 
@@ -68,7 +66,6 @@ export default function CreateGameScreen({ route, navigation }: any) {
         price_per_player: isPaid ? Number(pricePerPlayer) : null,
     };
 
-    console.log('Creating game payload:', payload);
 
     const { data, error } = await supabase
         .from('games')
@@ -78,15 +75,11 @@ export default function CreateGameScreen({ route, navigation }: any) {
 
     setLoading(false);
 
-    console.log('Create game data:', data);
-    console.log('Create game error:', error);
 
     if (error) {
-        Alert.alert('Create failed', error.message);
         return;
     }
 
-    Alert.alert('Success', 'Game created.');
     navigation.goBack();
     }
 

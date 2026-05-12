@@ -1,16 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
-import { getGamesByCourt } from '../../api/games';
+import { getGamesByCourt, joinGame, leaveGame } from '../../api/games';
 import GameCard from '../../components/GameCard';
+import { supabase } from '../../lib/supabase';
+
+type GamePlayer = {
+  id: number;
+  user_id: string;
+  status: string;
+  payment_status: string;
+};
 
 type Game = {
   id: number;
@@ -20,17 +29,31 @@ type Game = {
   max_players: number;
   is_paid: boolean;
   price_per_player: number | null;
+  game_players: GamePlayer[];
 };
 
-export default function CourtDetailScreen({ route, navigation }: any){
+export default function CourtDetailScreen({ route, navigation }: any) {
   const { court } = route.params;
 
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadGames();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadUserAndGames();
+    }, [])
+  );
+
+  async function loadUserAndGames() {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    setCurrentUserId(session?.user?.id ?? null);
+
+    await loadGames();
+  }
 
   async function loadGames() {
     try {
@@ -40,6 +63,24 @@ export default function CourtDetailScreen({ route, navigation }: any){
       Alert.alert('Error', error.message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleJoinGame(gameId: number) {
+    try {
+      await joinGame(gameId);
+      await loadGames();
+    } catch (error: any) {
+      Alert.alert('Join failed', error.message);
+    }
+  }
+
+  async function handleLeaveGame(gameId: number) {
+    try {
+      await leaveGame(gameId);
+      await loadGames();
+    } catch (error: any) {
+      Alert.alert('Leave failed', error.message);
     }
   }
 
@@ -59,27 +100,41 @@ export default function CourtDetailScreen({ route, navigation }: any){
 
       <Pressable
         style={styles.createButton}
-        onPress={() =>
-            navigation.navigate('CreateGame', { court })
-        }
-        >
+        onPress={() => navigation.navigate('CreateGame', { court })}
+      >
         <Text style={styles.createButtonText}>+ Create Game</Text>
-        </Pressable>
-        
+      </Pressable>
+
       {games.length === 0 ? (
-        <Text style={styles.emptyText}>No games scheduled for this court yet.</Text>
+        <Text style={styles.emptyText}>
+          No games scheduled for this court yet.
+        </Text>
       ) : (
-        games.map((game) => (
-          <GameCard
-            key={game.id}
-            title={game.title}
-            startTime={game.start_time}
-            endTime={game.end_time}
-            maxPlayers={game.max_players}
-            isPaid={game.is_paid}
-            pricePerPlayer={game.price_per_player}
-          />
-        ))
+        games.map((game) => {
+          const joinedPlayers =
+            game.game_players?.filter((player) => player.status === 'joined') ??
+            [];
+
+          const userJoined = joinedPlayers.some(
+            (player) => player.user_id === currentUserId
+          );
+
+          return (
+            <GameCard
+              key={game.id}
+              title={game.title}
+              startTime={game.start_time}
+              endTime={game.end_time}
+              maxPlayers={game.max_players}
+              isPaid={game.is_paid}
+              pricePerPlayer={game.price_per_player}
+              joinedCount={joinedPlayers.length}
+              userJoined={userJoined}
+              onJoin={() => handleJoinGame(game.id)}
+              onLeave={() => handleLeaveGame(game.id)}
+            />
+          );
+        })
       )}
     </ScrollView>
   );
@@ -112,15 +167,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   createButton: {
-  backgroundColor: '#111827',
-  padding: 14,
-  borderRadius: 10,
-  marginBottom: 20,
- },
+    backgroundColor: '#111827',
+    padding: 14,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
   createButtonText: {
-  color: '#fff',
-  textAlign: 'center',
-  fontWeight: '700',
-},
-
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: '700',
+  },
 });

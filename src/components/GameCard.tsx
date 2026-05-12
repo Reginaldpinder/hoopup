@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 
 type GameCardProps = {
   title: string;
@@ -8,6 +8,10 @@ type GameCardProps = {
   maxPlayers: number;
   isPaid: boolean;
   pricePerPlayer?: number | null;
+  joinedCount: number;
+  userJoined: boolean;
+  onJoin: () => void;
+  onLeave: () => void;
 };
 
 export default function GameCard({
@@ -17,21 +21,45 @@ export default function GameCard({
   maxPlayers,
   isPaid,
   pricePerPlayer,
+  joinedCount,
+  userJoined,
+  onJoin,
+  onLeave,
 }: GameCardProps) {
+  const isFull = joinedCount >= maxPlayers;
+
   return (
-    <View style={styles.card}>
+    <Pressable style={styles.card}>
       <Text style={styles.title}>{title}</Text>
 
       <Text style={styles.detail}>
         {format(new Date(startTime), 'p')} - {format(new Date(endTime), 'p')}
       </Text>
 
-      <Text style={styles.detail}>Max Players: {maxPlayers}</Text>
+      <Text style={styles.detail}>
+        Players: {joinedCount} / {maxPlayers}
+      </Text>
 
       <Text style={isPaid ? styles.paid : styles.free}>
         {isPaid ? `$${pricePerPlayer} per player` : 'Free'}
       </Text>
-    </View>
+
+      {userJoined ? (
+        <Pressable style={styles.leaveButton} onPress={onLeave}>
+          <Text style={styles.buttonText}>Leave Game</Text>
+        </Pressable>
+      ) : (
+        <Pressable
+          style={[styles.joinButton, isFull && styles.disabledButton]}
+          onPress={onJoin}
+          disabled={isFull}
+        >
+          <Text style={styles.buttonText}>
+            {isFull ? 'Game Full' : 'Join Game'}
+          </Text>
+        </Pressable>
+      )}
+    </Pressable>
   );
 }
 
@@ -62,5 +90,25 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontWeight: '700',
     color: '#047857',
+  },
+  joinButton: {
+    marginTop: 14,
+    backgroundColor: '#111827',
+    padding: 12,
+    borderRadius: 10,
+  },
+  leaveButton: {
+    marginTop: 14,
+    backgroundColor: '#991b1b',
+    padding: 12,
+    borderRadius: 10,
+  },
+  disabledButton: {
+    backgroundColor: '#9ca3af',
+  },
+  buttonText: {
+    color: '#ffffff',
+    textAlign: 'center',
+    fontWeight: '700',
   },
 });
