@@ -22,7 +22,7 @@ type Court = {
   court_name: string;
 };
 
-export default function GymHomeScreen() {
+export default function GymHomeScreen({ navigation }: any) {
   const [gym, setGym] = useState<Gym | null>(null);
   const [courts, setCourts] = useState<Court[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +63,7 @@ export default function GymHomeScreen() {
         <CourtCard
           key={court.id}
           courtName={court.court_name}
+          onPress={() => navigation.navigate('CourtDetail', { court })}
         />
       ))}
     </ScrollView>
