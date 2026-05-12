@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import CreateGameScreen from '../screens/games/CreateGameScreen';
+import GameDetailScreen from '../screens/games/GameDetailScreen';
 import MyGamesScreen from '../screens/games/MyGamesScreen';
 import CourtDetailScreen from '../screens/home/CourtDetailScreen';
 import GymHomeScreen from '../screens/home/GymHomeScreen';
@@ -28,6 +29,11 @@ function HomeStackNavigator() {
         component={CreateGameScreen}
         options={{ title: 'Create Game' }}
       />
+      <HomeStack.Screen
+        name="GameDetail"
+        component={GameDetailScreen}
+        options={{ title: 'Game Detail' }}
+       />
     </HomeStack.Navigator>
   );
 }

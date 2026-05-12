@@ -132,6 +132,7 @@ export default function CourtDetailScreen({ route, navigation }: any) {
               userJoined={userJoined}
               onJoin={() => handleJoinGame(game.id)}
               onLeave={() => handleLeaveGame(game.id)}
+              onPress={() => navigation.navigate('GameDetail', { gameId: game.id })}
             />
           );
         })

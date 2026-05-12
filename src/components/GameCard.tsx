@@ -12,6 +12,7 @@ type GameCardProps = {
   userJoined: boolean;
   onJoin: () => void;
   onLeave: () => void;
+  onPress?: () => void;
 };
 
 export default function GameCard({
@@ -25,11 +26,12 @@ export default function GameCard({
   userJoined,
   onJoin,
   onLeave,
+  onPress,
 }: GameCardProps) {
   const isFull = joinedCount >= maxPlayers;
 
   return (
-    <Pressable style={styles.card}>
+    <Pressable style={styles.card} onPress={onPress}>
       <Text style={styles.title}>{title}</Text>
 
       <Text style={styles.detail}>
