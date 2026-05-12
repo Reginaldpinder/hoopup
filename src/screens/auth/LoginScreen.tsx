@@ -39,7 +39,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       return;
     }
 
-    navigation.navigate('CreateProfile');
+ 
   }
 
   return (
