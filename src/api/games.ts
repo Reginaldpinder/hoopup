@@ -35,3 +35,52 @@ export async function leaveGame(gameId: number) {
 
   if (error) throw error;
 }
+
+export async function getHostedGames(userId: string) {
+  const { data, error } = await supabase
+    .from('games')
+    .select(`
+      *,
+      courts (
+        id,
+        court_name,
+        gyms (
+          id,
+          name
+        )
+      )
+    `)
+    .eq('host_id', userId)
+    .order('start_time', { ascending: true });
+
+  if (error) throw error;
+
+  return data;
+}
+
+export async function getJoinedGames(userId: string) {
+  const { data, error } = await supabase
+    .from('game_players')
+    .select(`
+      id,
+      status,
+      payment_status,
+      games (
+        *,
+        courts (
+          id,
+          court_name,
+          gyms (
+            id,
+            name
+          )
+        )
+      )
+    `)
+    .eq('user_id', userId)
+    .eq('status', 'joined');
+
+  if (error) throw error;
+
+  return data;
+}
