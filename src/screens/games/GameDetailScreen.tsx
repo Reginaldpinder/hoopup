@@ -11,7 +11,13 @@ import {
     View,
 } from 'react-native';
 
-import { joinGame, leaveGame, updatePaymentStatus } from '../../api/games';
+import {
+    cancelGame,
+    joinGame,
+    leaveGame,
+    removePlayerFromGame,
+    updatePaymentStatus,
+} from '../../api/games';
 import { supabase } from '../../lib/supabase';
 
 
@@ -118,26 +124,49 @@ export default function GameDetailScreen({ route }: any) {
     if (!game) return;
 
     try {
-      await leaveGame(game.id);
-      await loadGameDetail();
+        await leaveGame(game.id);
+        await loadGameDetail();
     } catch (error: any) {
-      Alert.alert('Leave failed', error.message);
+        Alert.alert('Leave failed', error.message);
     }
-  }
+    }
 
-async function handleUpdatePayment(
-  playerUserId: string,
-  paymentStatus: 'paid' | 'unpaid'
-) {
-  if (!game) return;
+    async function handleCancelGame() {
+    if (!game) return;
 
-  try {
-    await updatePaymentStatus(game.id, playerUserId, paymentStatus);
-    await loadGameDetail();
-  } catch (error: any) {
-    Alert.alert('Payment update failed', error.message);
-  }
+    try {
+        await cancelGame(game.id);
+        await loadGameDetail();
+    } catch (error: any) {
+        Alert.alert('Cancel failed', error.message);
+    }
+   }
+
+    async function handleRemovePlayer(playerUserId: string) {
+    if (!game) return;
+
+    try {
+        await removePlayerFromGame(game.id, playerUserId);
+        await loadGameDetail();
+    } catch (error: any) {
+        Alert.alert('Remove failed', error.message);
+    }
 }
+
+    async function handleUpdatePayment(
+    playerUserId: string,
+    paymentStatus: 'paid' | 'unpaid'
+        ) {
+        if (!game) return;
+
+        try {
+            await updatePaymentStatus(game.id, playerUserId, paymentStatus);
+            await loadGameDetail();
+        } catch (error: any) {
+            Alert.alert('Payment update failed', error.message);
+        }
+    }
+
 
 
   if (loading) {
@@ -232,6 +261,16 @@ async function handleUpdatePayment(
                 </Pressable>
             )
             ) : null}
+
+
+            {isHost && player.user_id !== currentUserId ? (
+                <Pressable
+                    style={styles.removeButton}
+                    onPress={() => handleRemovePlayer(player.user_id)}
+                >
+                    <Text style={styles.smallButtonText}>Remove</Text>
+                </Pressable>
+                ) : null}
         </View>
         ))
       )}
@@ -253,8 +292,18 @@ async function handleUpdatePayment(
       )}
 
       {isHost ? (
-        <Text style={styles.hostText}>You are hosting this game.</Text>
-      ) : null}
+        <View style={styles.hostControls}>
+            <Text style={styles.hostText}>You are hosting this game.</Text>
+
+            {game.status !== 'cancelled' ? (
+            <Pressable style={styles.cancelButton} onPress={handleCancelGame}>
+                <Text style={styles.buttonText}>Cancel Game</Text>
+            </Pressable>
+            ) : (
+            <Text style={styles.cancelledText}>This game has been cancelled.</Text>
+            )}
+        </View>
+        ) : null}
     </ScrollView>
   );
 }
@@ -366,5 +415,29 @@ unpaidButton: {
 smallButtonText: {
   color: '#fff',
   fontWeight: '700',
+},
+
+hostControls: {
+  marginTop: 20,
+  marginBottom: 40,
+},
+cancelButton: {
+  marginTop: 14,
+  backgroundColor: '#991b1b',
+  padding: 16,
+  borderRadius: 10,
+},
+cancelledText: {
+  textAlign: 'center',
+  marginTop: 14,
+  fontWeight: '800',
+  color: '#991b1b',
+},
+removeButton: {
+  backgroundColor: '#7f1d1d',
+  paddingHorizontal: 12,
+  paddingVertical: 8,
+  borderRadius: 8,
+  marginLeft: 8,
 },
 });

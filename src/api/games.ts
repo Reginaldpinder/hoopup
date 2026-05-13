@@ -101,3 +101,19 @@ export async function updatePaymentStatus(
 
   if (error) throw error;
 }
+export async function cancelGame(gameId: number) {
+  const { error } = await supabase.rpc('cancel_game', {
+    p_game_id: gameId,
+  });
+
+  if (error) throw error;
+}
+
+export async function removePlayerFromGame(gameId: number, playerUserId: string) {
+  const { error } = await supabase.rpc('remove_player_from_game', {
+    p_game_id: gameId,
+    p_user_id: playerUserId,
+  });
+
+  if (error) throw error;
+}

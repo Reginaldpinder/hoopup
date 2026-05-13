@@ -10,6 +10,7 @@ type GameCardProps = {
   pricePerPlayer?: number | null;
   joinedCount: number;
   userJoined: boolean;
+  status: string;
   onJoin: () => void;
   onLeave: () => void;
   onPress?: () => void;
@@ -24,11 +25,13 @@ export default function GameCard({
   pricePerPlayer,
   joinedCount,
   userJoined,
+  status,
   onJoin,
   onLeave,
   onPress,
 }: GameCardProps) {
   const isFull = joinedCount >= maxPlayers;
+  const isClosed = isFull || status === 'cancelled';
 
   return (
     <Pressable style={styles.card} onPress={onPress}>
@@ -42,6 +45,10 @@ export default function GameCard({
         Players: {joinedCount} / {maxPlayers}
       </Text>
 
+      {status === 'cancelled' ? (
+          <Text style={styles.cancelled}>Cancelled</Text>
+        ) : null}
+
       <Text style={isPaid ? styles.paid : styles.free}>
         {isPaid ? `$${pricePerPlayer} per player` : 'Free'}
       </Text>
@@ -52,18 +59,23 @@ export default function GameCard({
         </Pressable>
       ) : (
         <Pressable
-          style={[styles.joinButton, isFull && styles.disabledButton]}
+          style={[styles.joinButton, isClosed && styles.disabledButton]}
           onPress={onJoin}
-          disabled={isFull}
+          disabled={isClosed}
         >
           <Text style={styles.buttonText}>
-            {isFull ? 'Game Full' : 'Join Game'}
+            {status === 'cancelled'
+              ? 'Cancelled'
+              : isFull
+              ? 'Game Full'
+              : 'Join Game'}
           </Text>
         </Pressable>
       )}
     </Pressable>
   );
 }
+
 
 const styles = StyleSheet.create({
   card: {
@@ -112,5 +124,10 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     textAlign: 'center',
     fontWeight: '700',
+  },
+  cancelled: {
+  marginTop: 6,
+  fontWeight: '800',
+  color: '#991b1b',
   },
 });

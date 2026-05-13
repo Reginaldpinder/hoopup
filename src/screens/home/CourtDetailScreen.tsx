@@ -27,6 +27,7 @@ type Game = {
   start_time: string;
   end_time: string;
   max_players: number;
+  status: string;
   is_paid: boolean;
   price_per_player: number | null;
   game_players: GamePlayer[];
@@ -121,19 +122,20 @@ export default function CourtDetailScreen({ route, navigation }: any) {
 
           return (
             <GameCard
-              key={game.id}
-              title={game.title}
-              startTime={game.start_time}
-              endTime={game.end_time}
-              maxPlayers={game.max_players}
-              isPaid={game.is_paid}
-              pricePerPlayer={game.price_per_player}
-              joinedCount={joinedPlayers.length}
-              userJoined={userJoined}
-              onJoin={() => handleJoinGame(game.id)}
-              onLeave={() => handleLeaveGame(game.id)}
-              onPress={() => navigation.navigate('GameDetail', { gameId: game.id })}
-            />
+                key={game.id}
+                title={game.title}
+                startTime={game.start_time}
+                endTime={game.end_time}
+                maxPlayers={game.max_players}
+                status={game.status}
+                isPaid={game.is_paid}
+                pricePerPlayer={game.price_per_player}
+                joinedCount={joinedPlayers.length}
+                userJoined={userJoined}
+                onJoin={() => handleJoinGame(game.id)}
+                onLeave={() => handleLeaveGame(game.id)}
+                onPress={() => navigation.navigate('GameDetail', { gameId: game.id })}
+              />
           );
         })
       )}
