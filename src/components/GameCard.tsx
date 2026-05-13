@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { Pressable, StyleSheet, Text } from 'react-native';
-
+import { COLORS, RADIUS, SPACING } from '../constants/theme';
 type GameCardProps = {
   title: string;
   startTime: string;
@@ -78,56 +78,57 @@ export default function GameCard({
 
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 14,
-    padding: 18,
-    marginBottom: 14,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 6,
-  },
-  detail: {
-    color: '#4b5563',
-    marginBottom: 4,
-  },
-  paid: {
-    marginTop: 8,
-    fontWeight: '700',
-    color: '#b45309',
-  },
-  free: {
-    marginTop: 8,
-    fontWeight: '700',
-    color: '#047857',
-  },
-  joinButton: {
-    marginTop: 14,
-    backgroundColor: '#111827',
-    padding: 12,
-    borderRadius: 10,
-  },
-  leaveButton: {
-    marginTop: 14,
-    backgroundColor: '#991b1b',
-    padding: 12,
-    borderRadius: 10,
-  },
-  disabledButton: {
-    backgroundColor: '#9ca3af',
-  },
-  buttonText: {
-    color: '#ffffff',
-    textAlign: 'center',
-    fontWeight: '700',
-  },
-  cancelled: {
+card: {
+  backgroundColor: COLORS.darkCard,
+  borderRadius: RADIUS.lg,
+  padding: SPACING.lg,
+  marginBottom: 16,
+  borderWidth: 1,
+  borderColor: COLORS.border,
+},
+title: {
+  fontSize: 22,
+  fontWeight: '800',
+  color: COLORS.white,
+  marginBottom: 6,
+},
+detail: {
+  color: COLORS.gray,
+  marginBottom: 4,
+},
+paid: {
+  marginTop: 8,
+  fontWeight: '800',
+  color: COLORS.orange,
+},
+free: {
+  marginTop: 8,
+  fontWeight: '800',
+  color: COLORS.gold,
+},
+joinButton: {
+  marginTop: 14,
+  backgroundColor: COLORS.orange,
+  padding: 14,
+  borderRadius: RADIUS.md,
+},
+leaveButton: {
+  marginTop: 14,
+  backgroundColor: COLORS.danger,
+  padding: 14,
+  borderRadius: RADIUS.md,
+},
+disabledButton: {
+  backgroundColor: '#4B5563',
+},
+buttonText: {
+  color: COLORS.white,
+  textAlign: 'center',
+  fontWeight: '800',
+},
+cancelled: {
   marginTop: 6,
   fontWeight: '800',
-  color: '#991b1b',
-  },
+  color: COLORS.danger,
+},
 });

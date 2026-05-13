@@ -1,10 +1,23 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { DarkTheme, NavigationContainer } from '@react-navigation/native';
 import { Session } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 
+import { COLORS } from '../constants/theme';
 import { supabase } from '../lib/supabase';
 import AppNavigator from './AppNavigator';
 import AuthNavigator from './AuthNavigator';
+
+const HoopUpTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: COLORS.black,
+    card: COLORS.black,
+    text: COLORS.white,
+    border: COLORS.border,
+    primary: COLORS.orange,
+  },
+};
 
 export default function RootNavigator() {
   const [session, setSession] = useState<Session | null>(null);
@@ -22,17 +35,13 @@ export default function RootNavigator() {
       setSession(session);
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
-  if (loading) {
-    return null;
-  }
+  if (loading) return null;
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={HoopUpTheme}>
       {session ? <AppNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );

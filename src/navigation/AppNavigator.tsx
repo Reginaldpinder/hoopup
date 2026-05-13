@@ -41,7 +41,18 @@ function HomeStackNavigator() {
 
 export default function AppNavigator() {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator    
+    screenOptions={{
+      headerStyle: { backgroundColor: '#0D1117' },
+      headerTintColor: '#FFFFFF',
+      tabBarStyle: {
+        backgroundColor: '#0D1117',
+        borderTopColor: '#263241',
+      },
+      tabBarActiveTintColor: '#FF6A00',
+      tabBarInactiveTintColor: '#B8BFC6',
+    }}>
+      
       <Tab.Screen
         name="Home"
         component={HomeStackNavigator}
