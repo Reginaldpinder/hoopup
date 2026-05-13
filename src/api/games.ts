@@ -84,3 +84,20 @@ export async function getJoinedGames(userId: string) {
 
   return data;
 }
+
+export async function updatePaymentStatus(
+  gameId: number,
+  playerUserId: string,
+  paymentStatus: 'paid' | 'unpaid'
+) {
+  const rpcName =
+    paymentStatus === 'paid' ? 'mark_player_paid' : 'mark_player_unpaid';
+
+  const { error } = await supabase.rpc(rpcName, {
+    p_game_id: gameId,
+    p_user_id: playerUserId,
+    p_payment_note: null,
+  });
+
+  if (error) throw error;
+}

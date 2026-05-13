@@ -11,8 +11,9 @@ import {
     View,
 } from 'react-native';
 
-import { joinGame, leaveGame } from '../../api/games';
+import { joinGame, leaveGame, updatePaymentStatus } from '../../api/games';
 import { supabase } from '../../lib/supabase';
+
 
 type GamePlayer = {
   id: number;
@@ -124,6 +125,21 @@ export default function GameDetailScreen({ route }: any) {
     }
   }
 
+async function handleUpdatePayment(
+  playerUserId: string,
+  paymentStatus: 'paid' | 'unpaid'
+) {
+  if (!game) return;
+
+  try {
+    await updatePaymentStatus(game.id, playerUserId, paymentStatus);
+    await loadGameDetail();
+  } catch (error: any) {
+    Alert.alert('Payment update failed', error.message);
+  }
+}
+
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -139,6 +155,8 @@ export default function GameDetailScreen({ route }: any) {
       </View>
     );
   }
+
+ 
 
   const joinedPlayers =
     game.game_players?.filter((player) => player.status === 'joined') ?? [];
@@ -184,15 +202,37 @@ export default function GameDetailScreen({ route }: any) {
         <Text style={styles.emptyText}>No players have joined yet.</Text>
       ) : (
         joinedPlayers.map((player) => (
-          <View key={player.id} style={styles.playerRow}>
+        <View key={player.id} style={styles.playerRow}>
+            <View>
             <Text style={styles.playerName}>
-              {player.profiles?.display_name ?? player.profiles?.username ?? 'Player'}
+                {player.profiles?.display_name ?? player.profiles?.username ?? 'Player'}
             </Text>
 
-            {game.is_paid && isHost ? (
-              <Text style={styles.paymentText}>{player.payment_status}</Text>
+            {game.is_paid ? (
+                <Text style={styles.paymentText}>
+                Payment: {player.payment_status}
+                </Text>
             ) : null}
-          </View>
+            </View>
+
+            {game.is_paid && isHost ? (
+            player.payment_status === 'paid' ? (
+                <Pressable
+                style={styles.unpaidButton}
+                onPress={() => handleUpdatePayment(player.user_id, 'unpaid')}
+                >
+                <Text style={styles.smallButtonText}>Mark Unpaid</Text>
+                </Pressable>
+            ) : (
+                <Pressable
+                style={styles.paidButton}
+                onPress={() => handleUpdatePayment(player.user_id, 'paid')}
+                >
+                <Text style={styles.smallButtonText}>Mark Paid</Text>
+                </Pressable>
+            )
+            ) : null}
+        </View>
         ))
       )}
 
@@ -311,4 +351,20 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#374151',
   },
+  paidButton: {
+  backgroundColor: '#047857',
+  paddingHorizontal: 12,
+  paddingVertical: 8,
+  borderRadius: 8,
+},
+unpaidButton: {
+  backgroundColor: '#b45309',
+  paddingHorizontal: 12,
+  paddingVertical: 8,
+  borderRadius: 8,
+},
+smallButtonText: {
+  color: '#fff',
+  fontWeight: '700',
+},
 });
