@@ -10,6 +10,8 @@ import {
 
 import { getCourts, getGym } from '../../api/courts';
 import CourtCard from '../../components/CourtCard';
+import { COLORS, SPACING } from '../../constants/theme';
+import { TYPOGRAPHY } from '../../constants/typography';
 
 type Gym = {
   id: number;
@@ -73,7 +75,7 @@ export default function GymHomeScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: COLORS.background,
     padding: 18,
   },
   centered: {
@@ -87,9 +89,10 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     marginTop: 12,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 16,
-  },
+sectionTitle: {
+  ...TYPOGRAPHY.h2,
+  color: COLORS.white,
+  marginBottom: SPACING.md,
+  marginTop: SPACING.lg,
+},
 });

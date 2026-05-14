@@ -2,22 +2,24 @@ import { useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { useCallback, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 import {
-    cancelGame,
-    joinGame,
-    leaveGame,
-    removePlayerFromGame,
-    updatePaymentStatus,
+  cancelGame,
+  joinGame,
+  leaveGame,
+  removePlayerFromGame,
+  updatePaymentStatus,
 } from '../../api/games';
+import { COLORS, RADIUS, SPACING } from '../../constants/theme';
+import { TYPOGRAPHY } from '../../constants/typography';
 import { supabase } from '../../lib/supabase';
 
 
@@ -167,6 +169,15 @@ export default function GameDetailScreen({ route }: any) {
         }
     }
 
+    function formatGameDate(dateString: string) {
+    return new Date(dateString).toLocaleString([], {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+}
+
 
 
   if (loading) {
@@ -199,6 +210,17 @@ export default function GameDetailScreen({ route }: any) {
 
   return (
     <ScrollView style={styles.container}>
+      <View style={styles.hero}>
+      <Text style={styles.gameTitle}>{game.title}</Text>
+
+      <Text style={styles.gameMeta}>
+        {formatGameDate(game.start_time)}
+      </Text>
+
+      <Text style={styles.gameMeta}>
+        {joinedPlayers.length} / {game.max_players} Players
+      </Text>
+    </View>
       <Text style={styles.title}>{game.title}</Text>
 
       <Text style={styles.detail}>{game.courts?.court_name}</Text>
@@ -311,7 +333,7 @@ export default function GameDetailScreen({ route }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: COLORS.background,
     padding: 18,
   },
   centered: {
@@ -347,7 +369,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   notes: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.background,
     padding: 14,
     borderRadius: 10,
     color: '#374151',
@@ -355,16 +377,14 @@ const styles = StyleSheet.create({
   emptyText: {
     color: '#6b7280',
   },
-  playerRow: {
-    backgroundColor: '#fff',
-    padding: 14,
-    borderRadius: 10,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
+playerRow: {
+  backgroundColor: COLORS.card,
+  borderRadius: RADIUS.lg,
+  padding: SPACING.md,
+  marginBottom: SPACING.sm,
+  borderWidth: 1,
+  borderColor: COLORS.border,
+},
   playerName: {
     fontWeight: '700',
   },
@@ -439,5 +459,25 @@ removeButton: {
   paddingVertical: 8,
   borderRadius: 8,
   marginLeft: 8,
+},
+hero: {
+  backgroundColor: COLORS.card,
+  margin: SPACING.lg,
+  padding: SPACING.xl,
+  borderRadius: RADIUS.xl,
+  borderWidth: 1,
+  borderColor: COLORS.border,
+},
+
+gameTitle: {
+  ...TYPOGRAPHY.h1,
+  color: COLORS.text,
+  marginBottom: SPACING.sm,
+},
+
+gameMeta: {
+  ...TYPOGRAPHY.body,
+  color: COLORS.textMuted,
+  marginBottom: 4,
 },
 });

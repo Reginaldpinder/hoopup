@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 
 import { getHostedGames, getJoinedGames } from '../../api/games';
+import { COLORS, SPACING } from '../../constants/theme';
+import { TYPOGRAPHY } from '../../constants/typography';
 import { supabase } from '../../lib/supabase';
 
 type AnyGame = any;
@@ -122,7 +124,7 @@ export default function MyGamesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: COLORS.background,
     padding: 18,
   },
   centered: {
@@ -130,37 +132,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 32,
-    fontWeight: '800',
-    marginBottom: 24,
-    marginTop: 12,
-  },
+title: {
+  ...TYPOGRAPHY.h1,
+  color: COLORS.white,
+  marginBottom: SPACING.lg,
+  marginTop: SPACING.sm,
+},
   sectionTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    marginBottom: 12,
-    marginTop: 18,
-  },
+  ...TYPOGRAPHY.h2,
+  color: COLORS.gray,
+  marginBottom: SPACING.md,
+  marginTop: SPACING.lg,
+},
   emptyText: {
     color: '#6b7280',
     marginBottom: 12,
   },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: COLORS.background,
     borderRadius: 14,
     padding: 18,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: '#75797f',
   },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 6,
-  },
+cardTitle: {
+  ...TYPOGRAPHY.h3,
+  color: COLORS.white,
+  marginBottom: 6,
+},
   cardDetail: {
-    color: '#4b5563',
+    color: '#5d6877',
     marginBottom: 4,
   },
   paid: {
@@ -176,6 +178,6 @@ const styles = StyleSheet.create({
   extraLabel: {
     marginTop: 8,
     fontWeight: '700',
-    color: '#111827',
+    color: '#b9bdc7',
   },
 });

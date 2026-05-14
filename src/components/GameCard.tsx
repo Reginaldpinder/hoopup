@@ -119,7 +119,9 @@ leaveButton: {
   borderRadius: RADIUS.md,
 },
 disabledButton: {
-  backgroundColor: '#4B5563',
+  backgroundColor: '#2A2F3A',
+  borderWidth: 1,
+  borderColor: '#3A4352',
 },
 buttonText: {
   color: COLORS.white,
@@ -127,8 +129,8 @@ buttonText: {
   fontWeight: '800',
 },
 cancelled: {
+  color: '#FF4D4F',
+  fontWeight: '700',
   marginTop: 6,
-  fontWeight: '800',
-  color: COLORS.danger,
 },
 });

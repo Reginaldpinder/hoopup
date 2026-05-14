@@ -6,9 +6,14 @@ export const COLORS = {
   darkCard2: '#161F2A',
   gray: '#B8BFC6',
   white: '#FFFFFF',
-  border: '#263241',
-  danger: '#B91C1C',
+  background: '#0D1117',
+  card: '#111827',
+  border: '#1F2937',
+  primary: '#FF6A00',
+  text: '#FFFFFF',
+  textMuted: '#B8BFC6',
   success: '#16A34A',
+  danger: '#EF4444',
 };
 
 export const SPACING = {
@@ -23,3 +28,4 @@ export const RADIUS = {
   lg: 20,
   xl: 28,
 };
+

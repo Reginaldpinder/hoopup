@@ -1,13 +1,18 @@
 import { useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
+
+import PrimaryButton from '../../components/PrimaryButton';
+import Screen from '../../components/Screen';
+import { COLORS, RADIUS, SPACING } from '../../constants/theme';
+import { TYPOGRAPHY } from '../../constants/typography';
 import { supabase } from '../../lib/supabase';
 
 export default function CreateProfileScreen() {
@@ -48,56 +53,77 @@ export default function CreateProfileScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Create Profile</Text>
+    <Screen>
+      <View style={styles.container}>
+        <Image
+          source={require('../../../assets/images/hoopup-logo.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        autoCapitalize="none"
-        value={username}
-        onChangeText={setUsername}
-      />
+        <Text style={styles.title}>Create your profile</Text>
+        <Text style={styles.subtitle}>Set your name so hoopers know who is pulling up.</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Display Name"
-        value={displayName}
-        onChangeText={setDisplayName}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          placeholderTextColor={COLORS.gray}
+          autoCapitalize="none"
+          value={username}
+          onChangeText={setUsername}
+        />
 
-      <Pressable style={styles.primaryButton} onPress={handleCreateProfile} disabled={loading}>
+        <TextInput
+          style={styles.input}
+          placeholder="Display Name"
+          placeholderTextColor={COLORS.gray}
+          value={displayName}
+          onChangeText={setDisplayName}
+        />
+
         {loading ? (
-          <ActivityIndicator color="#ffffff" />
+          <ActivityIndicator color={COLORS.orange} style={styles.loader} />
         ) : (
-          <Text style={styles.primaryButtonText}>Save Profile</Text>
+          <PrimaryButton title="Save Profile" onPress={handleCreateProfile} />
         )}
-      </Pressable>
-    </View>
+      </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, justifyContent: 'center', backgroundColor: '#fff' },
-  title: { fontSize: 32, fontWeight: '800', textAlign: 'center', marginBottom: 32 },
+  container: {
+    flex: 1,
+    padding: SPACING.lg,
+    justifyContent: 'center',
+    backgroundColor: COLORS.black,
+  },
+  logo: {
+    width: 190,
+    height: 190,
+    alignSelf: 'center',
+    marginBottom: SPACING.lg,
+  },
+  title: {
+    ...TYPOGRAPHY.h2,
+    color: COLORS.white,
+    marginBottom: 4,
+  },
+  subtitle: {
+    color: COLORS.gray,
+    marginBottom: SPACING.lg,
+  },
   input: {
+    backgroundColor: COLORS.darkCard,
     borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 14,
-    fontSize: 16,
-  },
-  primaryButton: {
-    backgroundColor: '#111827',
+    borderColor: COLORS.border,
+    color: COLORS.white,
+    borderRadius: RADIUS.lg,
     padding: 16,
-    borderRadius: 10,
-    marginTop: 8,
-  },
-  primaryButtonText: {
-    color: '#ffffff',
+    marginBottom: SPACING.md,
     fontSize: 16,
-    fontWeight: '700',
-    textAlign: 'center',
+  },
+  loader: {
+    marginTop: SPACING.md,
   },
 });

@@ -2,12 +2,18 @@ import { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
+
+import PrimaryButton from '../../components/PrimaryButton';
+import Screen from '../../components/Screen';
+import { COLORS, RADIUS, SPACING } from '../../constants/theme';
+import { TYPOGRAPHY } from '../../constants/typography';
 import { supabase } from '../../lib/supabase';
 
 type LoginScreenProps = {
@@ -36,85 +42,98 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
     if (error) {
       Alert.alert('Login failed', error.message);
-      return;
     }
-
- 
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Log In</Text>
+    <Screen>
+      <View style={styles.container}>
+        <Image
+          source={require('../../../assets/images/hoopup-logo.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        autoCapitalize="none"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-      />
+        <Text style={styles.title}>Welcome back!</Text>
+        <Text style={styles.subtitle}>Log in to continue</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor={COLORS.gray}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+        />
 
-      <Pressable style={styles.primaryButton} onPress={handleLogin} disabled={loading}>
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor={COLORS.gray}
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+
         {loading ? (
-          <ActivityIndicator color="#ffffff" />
+          <ActivityIndicator color={COLORS.orange} style={styles.loader} />
         ) : (
-          <Text style={styles.primaryButtonText}>Log In</Text>
+          <PrimaryButton title="Log In" onPress={handleLogin} />
         )}
-      </Pressable>
 
-      <Pressable onPress={() => navigation.navigate('SignUp')}>
-        <Text style={styles.linkText}>Need an account? Sign up</Text>
-      </Pressable>
-    </View>
+        <Pressable onPress={() => navigation.navigate('SignUp')}>
+          <Text style={styles.linkText}>
+            Don&apos;t have an account? <Text style={styles.orangeText}>Sign up</Text>
+          </Text>
+        </Pressable>
+      </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
+    padding: SPACING.lg,
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: COLORS.black,
+  },
+  logo: {
+    width: 190,
+    height: 190,
+    alignSelf: 'center',
+    marginBottom: SPACING.lg,
   },
   title: {
-    fontSize: 32,
-    fontWeight: '800',
-    textAlign: 'center',
-    marginBottom: 32,
+    ...TYPOGRAPHY.h2,
+    color: COLORS.white,
+    marginBottom: 4,
+  },
+  subtitle: {
+    color: COLORS.gray,
+    marginBottom: SPACING.lg,
   },
   input: {
+    backgroundColor: COLORS.darkCard,
     borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 14,
-    fontSize: 16,
-  },
-  primaryButton: {
-    backgroundColor: '#111827',
+    borderColor: COLORS.border,
+    color: COLORS.white,
+    borderRadius: RADIUS.lg,
     padding: 16,
-    borderRadius: 10,
-    marginTop: 8,
-  },
-  primaryButtonText: {
-    color: '#ffffff',
+    marginBottom: SPACING.md,
     fontSize: 16,
-    fontWeight: '700',
-    textAlign: 'center',
+  },
+  loader: {
+    marginTop: SPACING.md,
   },
   linkText: {
-    marginTop: 18,
-    color: '#2563eb',
+    color: COLORS.gray,
     textAlign: 'center',
-    fontWeight: '600',
+    marginTop: SPACING.lg,
+    fontWeight: '700',
+  },
+  orangeText: {
+    color: COLORS.orange,
   },
 });

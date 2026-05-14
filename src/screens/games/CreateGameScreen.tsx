@@ -1,218 +1,126 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
-  Pressable,
   ScrollView,
   StyleSheet,
-  Switch,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 
-import { supabase } from '../../lib/supabase';
+import { getCourts, getGym } from '../../api/courts';
+import CourtCard from '../../components/CourtCard';
+import Screen from '../../components/Screen';
+import { COLORS, SPACING } from '../../constants/theme';
+import { TYPOGRAPHY } from '../../constants/typography';
 
-export default function CreateGameScreen({ route, navigation }: any) {
-  const { court } = route.params;
+type Gym = {
+  id: number;
+  name: string;
+  address: string;
+};
 
-  const [title, setTitle] = useState('Pickup Game');
-  const [notes, setNotes] = useState('');
-  const [maxPlayers, setMaxPlayers] = useState('10');
+type Court = {
+  id: number;
+  court_name: string;
+};
 
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
+export default function GymHomeScreen({ navigation }: any) {
+  const [gym, setGym] = useState<Gym | null>(null);
+  const [courts, setCourts] = useState<Court[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [isPaid, setIsPaid] = useState(false);
-  const [pricePerPlayer, setPricePerPlayer] = useState('');
+  useEffect(() => {
+    loadGymData();
+  }, []);
 
-  const [loading, setLoading] = useState(false);
+  async function loadGymData() {
+    try {
+      const gymData = await getGym();
+      const courtsData = await getCourts();
 
-    async function handleCreateGame() {
-    console.log('handleCreateGame started');
-
-    if (!title || !startTime || !endTime || !maxPlayers) {
-        Alert.alert('Missing fields', 'Please complete all required fields.');
-        return;
+      setGym(gymData);
+      setCourts(courtsData || []);
+    } catch (error: any) {
+      Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    if (isPaid && !pricePerPlayer) {
-        Alert.alert('Missing price', 'Please enter a price per player.');
-        return;
-    }
-
-    setLoading(true);
-
-    const {
-        data: { session },
-        } = await supabase.auth.getSession();
-
-
-        const user = session?.user;
-
-        if (!user) {
-        setLoading(false);
-        return;
-        }
-
-    const payload = {
-        court_id: court.id,
-        host_id: user.id,
-        title,
-        notes,
-        start_time: startTime,
-        end_time: endTime,
-        max_players: Number(maxPlayers),
-        is_paid: isPaid,
-        price_per_player: isPaid ? Number(pricePerPlayer) : null,
-    };
-
-
-    const { data, error } = await supabase
-        .from('games')
-        .insert(payload)
-        .select()
-        .single();
-
-    setLoading(false);
-
-
-    if (error) {
-        return;
-    }
-
-    navigation.goBack();
-    }
+  if (loading) {
+    return (
+      <Screen>
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={COLORS.orange} />
+        </View>
+      </Screen>
+    );
+  }
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Create Game</Text>
+    <Screen>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <Text style={styles.location}>{gym?.name ?? 'HoopUp Gym'}</Text>
 
-      <Text style={styles.label}>Court</Text>
-      <Text style={styles.courtName}>{court.court_name}</Text>
+        <Text style={styles.greeting}>Good morning, Hooper! 👋</Text>
+        <Text style={styles.subtitle}>Ready to hoop today?</Text>
 
-      <Text style={styles.label}>Title</Text>
-      <TextInput
-        style={styles.input}
-        value={title}
-        onChangeText={setTitle}
-      />
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Courts</Text>
+          <Text style={styles.viewAll}>View all</Text>
+        </View>
 
-      <Text style={styles.label}>Notes</Text>
-      <TextInput
-        style={[styles.input, styles.notesInput]}
-        value={notes}
-        onChangeText={setNotes}
-        multiline
-      />
-
-      <Text style={styles.label}>Start Time</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="2025-05-20T19:00:00Z"
-        value={startTime}
-        onChangeText={setStartTime}
-      />
-
-      <Text style={styles.label}>End Time</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="2025-05-20T20:00:00Z"
-        value={endTime}
-        onChangeText={setEndTime}
-      />
-
-      <Text style={styles.label}>Max Players</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        value={maxPlayers}
-        onChangeText={setMaxPlayers}
-      />
-
-      <View style={styles.switchRow}>
-        <Text style={styles.label}>Paid Game</Text>
-
-        <Switch
-          value={isPaid}
-          onValueChange={setIsPaid}
-        />
-      </View>
-
-      {isPaid && (
-        <>
-          <Text style={styles.label}>Price Per Player</Text>
-
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={pricePerPlayer}
-            onChangeText={setPricePerPlayer}
+        {courts.map((court) => (
+          <CourtCard
+            key={court.id}
+            courtName={court.court_name}
+            onPress={() => navigation.navigate('CourtDetail', { court })}
           />
-        </>
-      )}
-
-        <Pressable
-        style={styles.button}
-        onPress={handleCreateGame}
-        disabled={loading}
-        >
-        <Text style={styles.buttonText}>
-            {loading ? 'Creating...' : 'Create Game'}
-        </Text>
-        </Pressable>
-    </ScrollView>
+        ))}
+      </ScrollView>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 18,
+    padding: SPACING.lg,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: '800',
-    marginBottom: 24,
-    marginTop: 12,
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  label: {
+  location: {
+    color: COLORS.gray,
+    fontSize: 14,
     fontWeight: '700',
-    marginBottom: 8,
-    marginTop: 12,
+    marginBottom: SPACING.md,
   },
-  courtName: {
-    fontSize: 18,
-    marginBottom: 8,
+  greeting: {
+    ...TYPOGRAPHY.h2,
+    color: COLORS.white,
+    marginBottom: 4,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 10,
-    padding: 14,
-    fontSize: 16,
+  subtitle: {
+    color: COLORS.gray,
+    marginBottom: SPACING.xl,
+    fontSize: 15,
   },
-  notesInput: {
-    height: 100,
-    textAlignVertical: 'top',
-  },
-  switchRow: {
-    marginTop: 20,
+  sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: SPACING.md,
   },
-  button: {
-    marginTop: 30,
-    backgroundColor: '#111827',
-    padding: 18,
-    borderRadius: 10,
-    marginBottom: 40,
+  sectionTitle: {
+    ...TYPOGRAPHY.h3,
+    color: COLORS.white,
   },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: '700',
-    fontSize: 16,
+  viewAll: {
+    color: COLORS.orange,
+    fontWeight: '800',
   },
 });

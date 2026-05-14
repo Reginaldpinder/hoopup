@@ -12,6 +12,8 @@ import {
 
 import { getGamesByCourt, joinGame, leaveGame } from '../../api/games';
 import GameCard from '../../components/GameCard';
+import { COLORS, SPACING } from '../../constants/theme';
+import { TYPOGRAPHY } from '../../constants/typography';
 import { supabase } from '../../lib/supabase';
 
 type GamePlayer = {
@@ -146,7 +148,7 @@ export default function CourtDetailScreen({ route, navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: COLORS.background,
     padding: 18,
   },
   centered: {
@@ -155,22 +157,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 32,
-    fontWeight: '800',
-    marginBottom: 20,
-    marginTop: 12,
+    ...TYPOGRAPHY.h1,
+    color: COLORS.text,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 16,
+    ...TYPOGRAPHY.h2,
+    color: COLORS.white,
+    marginBottom: SPACING.md,
+    marginTop: SPACING.lg,
   },
   emptyText: {
-    color: '#6b7280',
-    fontSize: 16,
+    ...TYPOGRAPHY.h1,
+    color: COLORS.text,
   },
   createButton: {
-    backgroundColor: '#111827',
+    backgroundColor: COLORS.background,
     padding: 14,
     borderRadius: 10,
     marginBottom: 20,
